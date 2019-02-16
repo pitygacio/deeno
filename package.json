@@ -1,0 +1,26 @@
+{
+  "name": "8-bit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server public -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pitygacio/8-bit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pitygacio/8-bit/issues"
+  },
+  "homepage": "https://github.com/pitygacio/8-bit#readme",
+  "dependencies": {
+    "http-server": "^0.11.1"
+  },
+  "devDependencies": {
+    "@types/pixi.js": "4.8.6"
+  }
+}
