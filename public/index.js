@@ -10,7 +10,7 @@ let app = new PIXI.Application(),
 document.body.appendChild(app.view);
 
 const bg = PIXI.Texture.fromImage("sprites/bg.png");
-let background = new PIXI.extras.TilingSprite(bg, 800, 600);
+const background = new PIXI.extras.TilingSprite(bg, 800, 600);
 app.stage.addChild(background);
 
 app.ticker.add(() => {
@@ -32,7 +32,7 @@ clouds.position.set(900, 50);
 app.stage.addChild(clouds);
 
 app.ticker.add(() => {
-    clouds.position.x -= 0.5;
+    clouds.position.x -= 0.3;
 
     if (clouds.position.x < -400) {
         clouds.position.x = 1000;
@@ -40,7 +40,7 @@ app.ticker.add(() => {
 });
 
 // background triceratops
-let triceratops = PIXI.Sprite.fromImage("sprites/triceratops.png");
+const triceratops = PIXI.Sprite.fromImage("sprites/triceratops.png");
 triceratops.position.set(900, floor - 55);
 triceratops.scale.set(0.5, 0.5);
 
@@ -53,43 +53,36 @@ app.ticker.add(() => {
 });
 app.stage.addChild(triceratops);
 
-triceratops.texture.baseTexture.on("loaded", () => {
-    console.log(
-        "triceratops width and height: ",
-        triceratops.width,
-        triceratops.height
-    );
-});
-
 // player
-let player = PIXI.Sprite.fromImage("sprites/brachiosaurus.png");
-let playerDown = PIXI.Sprite.fromImage("sprites/brachiosaurus-down.png");
-player.position.set(initialPositionX, floor - playerHeight);
+const player = PIXI.Texture.fromImage("sprites/brachiosaurus.png");
+const playerDown = PIXI.Texture.fromImage("sprites/brachiosaurus-down.png");
+const brachiosaurus = new PIXI.Sprite(player);
 
-app.stage.addChild(player);
+brachiosaurus.position.set(initialPositionX, floor - playerHeight);
+app.stage.addChild(brachiosaurus);
 
 window.addEventListener("keydown", event => {
     if (event.keyCode === 38) {
-        if (player.position.y > 226) {
-            player.position.y -= jumpHeight;
+        if (brachiosaurus.position.y > 226) {
+            brachiosaurus.position.y -= jumpHeight;
         }
     }
+
     setTimeout(() => {
-        player.position.y = floor - playerHeight;
+        brachiosaurus.position.y = floor - playerHeight;
     }, jumpDelay);
 
     if (event.keyCode === 40) {
-        console.log("down arrow pressed");
+        brachiosaurus.texture = playerDown;
     }
-});
-
-// to get width and height from sprite
-player.texture.baseTexture.on("loaded", () => {
-    console.log("diplodocus width and height: ", player.width, player.height);
+    setTimeout(() => {
+        brachiosaurus.texture = player;
+        brachiosaurus.position.y = floor - playerHeight;
+    }, jumpDelay);
 });
 
 // obstacles
-let obstacle1 = PIXI.Sprite.fromImage("sprites/velociraptor1.png");
+const obstacle1 = PIXI.Sprite.fromImage("sprites/velociraptor1.png");
 obstacle1.position.set(700, floor - obstacleHeight);
 
 app.ticker.add(() => {
@@ -101,7 +94,7 @@ app.ticker.add(() => {
 });
 app.stage.addChild(obstacle1);
 
-let obstacle2 = PIXI.Sprite.fromImage("sprites/velociraptor2.png");
+const obstacle2 = PIXI.Sprite.fromImage("sprites/velociraptor2.png");
 obstacle2.position.set(800, floor - obstacleHeight);
 
 app.ticker.add(() => {
