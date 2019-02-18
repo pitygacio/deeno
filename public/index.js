@@ -14,41 +14,101 @@ let background = new PIXI.extras.TilingSprite(bg, 800, 600);
 app.stage.addChild(background);
 
 app.ticker.add(() => {
-    background.tileScale.set(0.58);
+    background.tileScale.set(0.6);
     background.tilePosition.x -= 2;
 });
 
 const initialPositionX = 50;
-const floor = 500;
+const floor = 550;
 const jumpDelay = 500;
 const jumpHeight = 90;
+const playerHeight = 144;
 
-// main character
-let player = PIXI.Sprite.fromImage("sprites/player1.png");
+const obstacleHeight = 84;
+const obstacleSpeed = 8;
 
-player.position.set(initialPositionX, floor);
+const clouds = PIXI.Sprite.fromImage("sprites/clouds.png");
+clouds.position.set(900, 50);
+app.stage.addChild(clouds);
+
+app.ticker.add(() => {
+    clouds.position.x -= 0.5;
+
+    if (clouds.position.x < -400) {
+        clouds.position.x = 1000;
+    }
+});
+
+// background triceratops
+let triceratops = PIXI.Sprite.fromImage("sprites/triceratops.png");
+triceratops.position.set(900, floor - 55);
+triceratops.scale.set(0.5, 0.5);
+
+app.ticker.add(() => {
+    triceratops.position.x -= 1;
+
+    if (triceratops.position.x < -600) {
+        triceratops.position.x = 1000;
+    }
+});
+app.stage.addChild(triceratops);
+
+triceratops.texture.baseTexture.on("loaded", () => {
+    console.log(
+        "triceratops width and height: ",
+        triceratops.width,
+        triceratops.height
+    );
+});
+
+// player
+let player = PIXI.Sprite.fromImage("sprites/brachiosaurus.png");
+let playerDown = PIXI.Sprite.fromImage("sprites/brachiosaurus-down.png");
+player.position.set(initialPositionX, floor - playerHeight);
 
 app.stage.addChild(player);
 
 window.addEventListener("keydown", event => {
     if (event.keyCode === 38) {
-        player.position.y -= jumpHeight;
+        if (player.position.y > 226) {
+            player.position.y -= jumpHeight;
+        }
     }
     setTimeout(() => {
-        player.position.y = floor;
+        player.position.y = floor - playerHeight;
     }, jumpDelay);
-});
 
-// enemy
-let enemy = PIXI.Sprite.fromImage("sprites/enemy.png");
-enemy.position.set(700, floor);
-
-app.ticker.add(() => {
-    enemy.position.x -= 8;
-
-    if (enemy.position.x < -120) {
-        enemy.position.x = 1000;
+    if (event.keyCode === 40) {
+        console.log("down arrow pressed");
     }
 });
 
-app.stage.addChild(enemy);
+// to get width and height from sprite
+player.texture.baseTexture.on("loaded", () => {
+    console.log("diplodocus width and height: ", player.width, player.height);
+});
+
+// obstacles
+let obstacle1 = PIXI.Sprite.fromImage("sprites/velociraptor1.png");
+obstacle1.position.set(700, floor - obstacleHeight);
+
+app.ticker.add(() => {
+    obstacle1.position.x -= obstacleSpeed;
+
+    if (obstacle1.position.x < -200) {
+        obstacle1.position.x = 1000;
+    }
+});
+app.stage.addChild(obstacle1);
+
+let obstacle2 = PIXI.Sprite.fromImage("sprites/velociraptor2.png");
+obstacle2.position.set(800, floor - obstacleHeight);
+
+app.ticker.add(() => {
+    obstacle2.position.x -= obstacleSpeed;
+
+    if (obstacle2.position.x < -400) {
+        obstacle2.position.x = 1200;
+    }
+});
+app.stage.addChild(obstacle2);
