@@ -26,7 +26,9 @@ const playerHeight = 144;
 
 const obstacleHeight = 84;
 const obstacleSpeed = 8;
+const obstacleSpeed2 = 9;
 
+// clouds
 const clouds = PIXI.Sprite.fromImage("sprites/clouds.png");
 clouds.position.set(900, 50);
 app.stage.addChild(clouds);
@@ -83,25 +85,34 @@ window.addEventListener("keydown", event => {
 
 // obstacles
 const obstacle1 = PIXI.Sprite.fromImage("sprites/velociraptor1.png");
-obstacle1.position.set(700, floor - obstacleHeight);
+obstacle1.position.set(1000, floor - obstacleHeight);
 
 app.ticker.add(() => {
+    const min = 1400;
+    const max = 1800;
+    let randomPosition = Math.random() * (max - min) + min;
+
     obstacle1.position.x -= obstacleSpeed;
 
     if (obstacle1.position.x < -200) {
-        obstacle1.position.x = 1000;
+        console.log("randomPosition obstacle1: ", randomPosition);
+        obstacle1.position.x = randomPosition;
     }
 });
 app.stage.addChild(obstacle1);
 
 const obstacle2 = PIXI.Sprite.fromImage("sprites/velociraptor2.png");
-obstacle2.position.set(800, floor - obstacleHeight);
+obstacle2.position.set(1400, floor - obstacleHeight);
 
 app.ticker.add(() => {
+    const min = 1800;
+    const max = 2000;
+    let randomPosition = Math.random() * (max - min) + min;
     obstacle2.position.x -= obstacleSpeed;
 
-    if (obstacle2.position.x < -400) {
-        obstacle2.position.x = 1200;
+    if (obstacle2.position.x < -800) {
+        console.log("randomPosition obstacle2: ", randomPosition);
+        obstacle2.position.x = randomPosition;
     }
 });
 app.stage.addChild(obstacle2);
