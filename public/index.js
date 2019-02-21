@@ -15,6 +15,7 @@ function isRightOf(x1, x2) {
     return x1 > x2;
 }
 
+// game settings
 const ORANGE_VELOCIRAPTOR_COLLISIONS = true;
 const BLUE_VELOCIRAPTOR_COLLISIONS = true;
 const PTERODACTYLUS_COLLISIONS = true;
@@ -23,6 +24,8 @@ const SCORE_INCREMENT = 0.1;
 const BACKGROUND_URL = "sprites/bgtest.png";
 const BACKGROUND_WIDTH = 800;
 const BACKGROUND_HEIGHT = 600;
+
+const GAME_OVER_URL = "sprites/gameover.png";
 
 const SATURN_URL = "sprites/saturn.png";
 const SATURN_POSITION_X = 100;
@@ -39,6 +42,7 @@ const TRICERATOPS_SCALE = 0.5;
 
 const PLAYER_URL = "sprites/brachiosaurus.png";
 const PLAYER_DUCK_URL = "sprites/brachiosaurus-down.png";
+const JUMP_SOUND_URL = "jump.mp3";
 
 const ORANGE_VELOCIRAPTOR_URL = "sprites/velociraptor1.png";
 const BLUE_VELOCIRAPTOR_URL = "sprites/velociraptor2.png";
@@ -69,6 +73,26 @@ const PTERODACTYLUS_WIDTH = 94;
 
 const ARROW_UP = 38;
 const ARROW_DOWN = 40;
+const ENTER = 13;
+
+const bg = Texture.fromImage(BACKGROUND_URL);
+const background = new TilingSprite(bg, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
+
+const saturn = Sprite.fromImage(SATURN_URL);
+const clouds = Sprite.fromImage(CLOUDS_URL);
+
+const triceratops = Sprite.fromImage(TRICERATOPS_URL);
+const player = Texture.fromImage(PLAYER_URL);
+const playerDown = Texture.fromImage(PLAYER_DUCK_URL);
+const brachiosaurus = new Sprite(player);
+
+const orangeVelociraptor = Sprite.fromImage(ORANGE_VELOCIRAPTOR_URL);
+const blueVelociraptor = Sprite.fromImage(BLUE_VELOCIRAPTOR_URL);
+const pterodactylus = Sprite.fromImage(PTERODACTYLUS_URL);
+
+const jumpSound = PIXI.sound.Sound.from(JUMP_SOUND_URL);
+
+const gameOverScreen = Sprite.fromImage(GAME_OVER_URL);
 
 const game = new Application();
 
@@ -76,8 +100,6 @@ const game = new Application();
 document.body.appendChild(game.view);
 
 // background
-const bg = Texture.fromImage(BACKGROUND_URL);
-const background = new TilingSprite(bg, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 game.stage.addChild(background);
 game.ticker.add(() => {
     // background.tileScale.set(0.6);
@@ -85,12 +107,10 @@ game.ticker.add(() => {
 });
 
 // extras
-const saturn = Sprite.fromImage(SATURN_URL);
 saturn.position.set(SATURN_POSITION_X, SATURN_POSITION_Y);
 saturn.rotation = SATURN_ROTATION;
 game.stage.addChild(saturn);
 
-const clouds = Sprite.fromImage(CLOUDS_URL);
 clouds.position.set(CLOUDS_POSITION_X, CLOUDS_POSITION_Y);
 game.stage.addChild(clouds);
 game.ticker.add(() => {
@@ -104,24 +124,26 @@ game.ticker.add(() => {
 // score
 const style = new TextStyle({
     align: "right",
-    fontFamily: "ipixelu",
-    fontSize: 36,
-    fill: "white"
+    fontFamily: "i_pixel_uregular",
+    fontSize: 46,
+    fill: "white",
+    letterSpacing: 2
 });
 
-let score = 0;
-const scoreText = new Text(score, style);
+let score = -1;
+const scoreText = new Text("", style);
 scoreText.anchor.set(1.0, 0.0);
 scoreText.position.x = SCORE_POSITION_X;
 scoreText.position.y = SCORE_POSITION_Y;
 game.stage.addChild(scoreText);
 game.ticker.add(() => {
     score += SCORE_INCREMENT;
-    scoreText.text = String(Math.floor(score));
+    if (score >= 0) {
+        scoreText.text = ("0000000" + String(Math.floor(score))).slice(-6);
+    }
 });
 
 // background triceratops
-const triceratops = Sprite.fromImage(TRICERATOPS_URL);
 triceratops.position.set(900, FLOOR_POSITION_Y - 55);
 triceratops.scale.set(TRICERATOPS_SCALE, TRICERATOPS_SCALE);
 game.ticker.add(() => {
@@ -134,14 +156,10 @@ game.ticker.add(() => {
 game.stage.addChild(triceratops);
 
 // player
-const player = Texture.fromImage(PLAYER_URL);
-const playerDown = Texture.fromImage(PLAYER_DUCK_URL);
-const brachiosaurus = new Sprite(player);
 brachiosaurus.position.set(PLAYER_POSITION_X, FLOOR_POSITION_Y - PLAYER_HEIGHT);
 game.stage.addChild(brachiosaurus);
 
 // obstacles
-const orangeVelociraptor = Sprite.fromImage(ORANGE_VELOCIRAPTOR_URL);
 orangeVelociraptor.position.set(
     getRandom(1000, 3000),
     FLOOR_POSITION_Y - VELOCIRAPTOR_HEIGHT
@@ -161,7 +179,7 @@ function checkVelociraptorCollision(player, velociraptor) {
         isRightOf(velociraptorTail, playerTail + 30) &&
         velociraptorTop < playerBottomSide
     ) {
-        game.stop();
+        gameOver();
     }
 }
 
@@ -182,7 +200,6 @@ game.ticker.add(() => {
 });
 game.stage.addChild(orangeVelociraptor);
 
-const blueVelociraptor = Sprite.fromImage(BLUE_VELOCIRAPTOR_URL);
 blueVelociraptor.position.set(
     getRandom(2000, 4000),
     FLOOR_POSITION_Y - VELOCIRAPTOR_HEIGHT
@@ -205,31 +222,30 @@ game.ticker.add(() => {
 });
 game.stage.addChild(blueVelociraptor);
 
-const obstacle3 = Sprite.fromImage(PTERODACTYLUS_URL);
-obstacle3.position.set(getRandom(3000, 5000), FLOOR_POSITION_Y - 120);
+pterodactylus.position.set(getRandom(3000, 5000), FLOOR_POSITION_Y - 120);
 
 game.ticker.add(() => {
-    obstacle3.position.x -= ORANGE_VELOCIRAPTOR_SPEED_X;
+    pterodactylus.position.x -= ORANGE_VELOCIRAPTOR_SPEED_X;
 
     if (PTERODACTYLUS_COLLISIONS && !isDucked && !isDoubleJumping) {
         const playerTail = PLAYER_POSITION_X;
         const playerFront = PLAYER_POSITION_X + PLAYER_WIDTH;
-        const pterodactylusHead = obstacle3.position.x;
+        const pterodactylusHead = pterodactylus.position.x;
         const pterodactylusTail = pterodactylusHead + PTERODACTYLUS_WIDTH;
 
         if (
             isLeftOf(pterodactylusHead, playerFront - 8) &&
             isRightOf(pterodactylusTail, playerTail + 140)
         ) {
-            game.stop();
+            gameOver();
         }
     }
 
-    if (obstacle3.position.x < -1500) {
-        obstacle3.position.x = 2000;
+    if (pterodactylus.position.x < -1500) {
+        pterodactylus.position.x = 2000;
     }
 });
-game.stage.addChild(obstacle3);
+game.stage.addChild(pterodactylus);
 
 // player movement
 let jumpTimeout;
@@ -237,8 +253,21 @@ let duckTimeout;
 let isJumping = false;
 let isDoubleJumping = false;
 let isDucked = false;
+let isGameOver = false;
 
 window.addEventListener("keydown", event => {
+    // restart game
+    if (event.keyCode === ENTER) {
+        if (isGameOver) {
+            isGameOver = false;
+            return restartGame();
+        }
+    }
+
+    if (isGameOver) {
+        return;
+    }
+
     // jump
     if (event.keyCode === ARROW_UP) {
         // cannot duck and jump at the same time
@@ -248,6 +277,7 @@ window.addEventListener("keydown", event => {
         }
         // allow jump as long as it hasn't reached the maximum jump height
         if (brachiosaurus.position.y > MAX_PLAYER_JUMP_HEIGHT) {
+            jumpSound.play();
             if (isJumping) {
                 isDoubleJumping = true;
             }
@@ -280,3 +310,30 @@ window.addEventListener("keydown", event => {
         }, PLAYER_JUMP_DELAY);
     }
 });
+
+function restartGame() {
+    score = 0;
+
+    game.stage.removeChild(gameOverScreen);
+
+    clouds.position.set(CLOUDS_POSITION_X, CLOUDS_POSITION_Y);
+    triceratops.position.set(900, FLOOR_POSITION_Y - 55);
+    orangeVelociraptor.position.set(
+        getRandom(1000, 3000),
+        FLOOR_POSITION_Y - VELOCIRAPTOR_HEIGHT
+    );
+    blueVelociraptor.position.set(
+        getRandom(2000, 4000),
+        FLOOR_POSITION_Y - VELOCIRAPTOR_HEIGHT
+    );
+    pterodactylus.position.set(getRandom(3000, 5000), FLOOR_POSITION_Y - 120);
+
+    game.start();
+}
+
+function gameOver() {
+    isGameOver = true;
+    game.stage.addChild(gameOverScreen);
+
+    game.stop();
+}
