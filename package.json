@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/pitygacio/8-bit#readme",
   "dependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "pixi-sound": "^2.1.0"
   },
   "devDependencies": {
     "@types/pixi.js": "4.8.6"
