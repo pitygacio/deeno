@@ -21,7 +21,7 @@ const BLUE_VELOCIRAPTOR_COLLISIONS = true;
 const PTERODACTYLUS_COLLISIONS = true;
 const SCORE_INCREMENT = 0.1;
 
-const BACKGROUND_URL = "sprites/bgtest.png";
+const BACKGROUND_URL = "sprites/bg.png";
 const BACKGROUND_WIDTH = 800;
 const BACKGROUND_HEIGHT = 600;
 
@@ -29,8 +29,13 @@ const GAME_OVER_URL = "sprites/gameover.png";
 
 const SATURN_URL = "sprites/saturn.png";
 const SATURN_POSITION_X = 100;
-const SATURN_POSITION_Y = 50;
+const SATURN_POSITION_Y = 60;
 const SATURN_ROTATION = 0.3;
+
+const JUPITER_URL = "sprites/jupiter.png";
+const JUPITER_POSITION_X = 640;
+const JUPITER_POSITION_Y = 30;
+const JUPITER_ROTATION = 0.1;
 
 const CLOUDS_URL = "sprites/clouds.png";
 const CLOUDS_POSITION_X = 900;
@@ -61,15 +66,12 @@ const PLAYER_JUMP_DELAY = 500;
 const PLAYER_JUMP_HEIGHT = 90;
 const PLAYER_HEIGHT = 144;
 const PLAYER_WIDTH = 164;
-// const PLAYER_DUCK_HEIGHT = 75;
-// const PLAYER_DUCK_WIDTH = 228;
 
 const VELOCIRAPTOR_HEIGHT = 82;
 const VELOCIRAPTOR_WIDTH = 102;
 const ORANGE_VELOCIRAPTOR_SPEED_X = 8;
 const BLUE_VELOCIRAPTOR_SPEED_X = 9;
 const PTERODACTYLUS_WIDTH = 94;
-// const PTERODACTYLUS_HEIGHT = 42;
 
 const ARROW_UP = 38;
 const ARROW_DOWN = 40;
@@ -79,6 +81,7 @@ const bg = Texture.fromImage(BACKGROUND_URL);
 const background = new TilingSprite(bg, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 
 const saturn = Sprite.fromImage(SATURN_URL);
+const jupiter = Sprite.fromImage(JUPITER_URL);
 const clouds = Sprite.fromImage(CLOUDS_URL);
 
 const triceratops = Sprite.fromImage(TRICERATOPS_URL);
@@ -102,7 +105,6 @@ document.body.appendChild(game.view);
 // background
 game.stage.addChild(background);
 game.ticker.add(() => {
-    // background.tileScale.set(0.6);
     background.tilePosition.x -= BACKGROUND_SPEED_X;
 });
 
@@ -110,6 +112,10 @@ game.ticker.add(() => {
 saturn.position.set(SATURN_POSITION_X, SATURN_POSITION_Y);
 saturn.rotation = SATURN_ROTATION;
 game.stage.addChild(saturn);
+
+jupiter.position.set(JUPITER_POSITION_X, JUPITER_POSITION_Y);
+jupiter.rotation = JUPITER_ROTATION;
+game.stage.addChild(jupiter);
 
 clouds.position.set(CLOUDS_POSITION_X, CLOUDS_POSITION_Y);
 game.stage.addChild(clouds);
@@ -124,7 +130,7 @@ game.ticker.add(() => {
 // score
 const style = new TextStyle({
     align: "right",
-    fontFamily: "i_pixel_uregular",
+    fontFamily: "arcade",
     fontSize: 46,
     fill: "white",
     letterSpacing: 2
@@ -144,7 +150,7 @@ game.ticker.add(() => {
 });
 
 // background triceratops
-triceratops.position.set(900, FLOOR_POSITION_Y - 55);
+triceratops.position.set(900, FLOOR_POSITION_Y - 50);
 triceratops.scale.set(TRICERATOPS_SCALE, TRICERATOPS_SCALE);
 game.ticker.add(() => {
     triceratops.position.x -= 1;
