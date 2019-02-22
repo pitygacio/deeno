@@ -30,3 +30,11 @@ Purple Triceratops, it's chill.
 ## Title Screen
 
 ![](public/sprites/startgame_1.png)
+
+## Roadmap
+
+- Animate characters
+- Improve collisions
+- High scores
+- Make Deeno fire lasers from its eyes
+- Increase difficulty over time
