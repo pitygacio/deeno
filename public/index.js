@@ -1,15 +1,7 @@
 /* global PIXI */
 /// <reference types="pixi.js" />
 
-const {
-    Application,
-    Texture,
-    Sprite,
-    TilingSprite,
-    Text,
-    TextStyle,
-    loader
-} = PIXI;
+const { Application, Texture, Sprite, TilingSprite, Text, TextStyle } = PIXI;
 
 function getRandom(min, max) {
     return Math.random() * (max - min) + min;
@@ -29,8 +21,8 @@ const BLUE_VELOCIRAPTOR_COLLISIONS = true;
 const PTERODACTYLUS_COLLISIONS = true;
 const SCORE_INCREMENT = 0.1;
 
-const START_GAME_URL = "sprites/startgame.png";
 const GAME_OVER_URL = "sprites/gameover.png";
+const GAME_OVER_SOUND_URL = "gameover.wav";
 
 const BACKGROUND_URL = "sprites/bg.png";
 const BACKGROUND_WIDTH = 800;
@@ -57,6 +49,7 @@ const TRICERATOPS_SCALE = 0.5;
 const PLAYER_URL = "sprites/brachiosaurus.png";
 const PLAYER_DUCK_URL = "sprites/brachiosaurus-down.png";
 const JUMP_SOUND_URL = "jump.mp3";
+const DUCK_SOUND_URL = "duck.wav";
 
 const ORANGE_VELOCIRAPTOR_URL = "sprites/velociraptor1.png";
 const BLUE_VELOCIRAPTOR_URL = "sprites/velociraptor2.png";
@@ -86,7 +79,6 @@ const ARROW_UP = 38;
 const ARROW_DOWN = 40;
 const ENTER = 13;
 
-const startGameScreen = Sprite.fromImage(START_GAME_URL);
 const gameOverScreen = Sprite.fromImage(GAME_OVER_URL);
 
 const bg = Texture.fromImage(BACKGROUND_URL);
@@ -106,6 +98,8 @@ const blueVelociraptor = Sprite.fromImage(BLUE_VELOCIRAPTOR_URL);
 const pterodactylus = Sprite.fromImage(PTERODACTYLUS_URL);
 
 const jumpSound = PIXI.sound.Sound.from(JUMP_SOUND_URL);
+const gameOverSound = PIXI.sound.Sound.from(GAME_OVER_SOUND_URL);
+const duckSound = PIXI.sound.Sound.from(DUCK_SOUND_URL);
 
 const game = new Application();
 
@@ -179,7 +173,7 @@ function startGame() {
     });
 
     // background triceratops
-    triceratops.position.set(900, FLOOR_POSITION_Y - 50);
+    triceratops.position.set(900, FLOOR_POSITION_Y - 40);
     triceratops.scale.set(TRICERATOPS_SCALE, TRICERATOPS_SCALE);
     game.ticker.add(() => {
         triceratops.position.x -= 1;
@@ -337,6 +331,7 @@ function startGame() {
                 return;
             }
             isDucked = true;
+            duckSound.play();
             brachiosaurus.texture = playerDown;
             if (duckTimeout) {
                 return;
@@ -374,6 +369,7 @@ function startGame() {
 
     function gameOver() {
         isGameOver = true;
+        gameOverSound.play();
         game.stage.addChild(gameOverScreen);
 
         game.stop();
