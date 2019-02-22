@@ -1,6 +1,6 @@
 # DEENO
 
-Deeno is a 2D runner 8 bit game, written in JavaScript using the [PixiJS library](https://pixijs.io). Art was designed with [Pyxel Edit](https://pyxeledit.com).
+DEENO is a 2D runner 8 bit game, written in JavaScript using the [PixiJS library](https://pixijs.io). Art was designed with [Pyxel Edit](https://pyxeledit.com).
 
 ## Playing
 
