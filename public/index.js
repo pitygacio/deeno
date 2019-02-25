@@ -21,6 +21,7 @@ const BLUE_VELOCIRAPTOR_COLLISIONS = true;
 const PTERODACTYLUS_COLLISIONS = true;
 const SCORE_INCREMENT = 0.1;
 
+const START_GAME_SOUND_URL = "8-Bit-Techno.mp3";
 const GAME_OVER_URL = "sprites/gameover.png";
 const GAME_OVER_SOUND_URL = "gameover.wav";
 
@@ -87,6 +88,7 @@ const background = new TilingSprite(bg, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
 const saturn = Sprite.fromImage(SATURN_URL);
 const jupiter = Sprite.fromImage(JUPITER_URL);
 const clouds = Sprite.fromImage(CLOUDS_URL);
+const moreClouds = Sprite.fromImage(CLOUDS_URL);
 
 const triceratops = Sprite.fromImage(TRICERATOPS_URL);
 const player = Texture.fromImage(PLAYER_URL);
@@ -97,8 +99,13 @@ const orangeVelociraptor = Sprite.fromImage(ORANGE_VELOCIRAPTOR_URL);
 const blueVelociraptor = Sprite.fromImage(BLUE_VELOCIRAPTOR_URL);
 const pterodactylus = Sprite.fromImage(PTERODACTYLUS_URL);
 
-const jumpSound = PIXI.sound.Sound.from(JUMP_SOUND_URL);
+const startGameSound = PIXI.sound.Sound.from({
+    url: START_GAME_SOUND_URL,
+    loop: true,
+    volume: 0.5
+});
 const gameOverSound = PIXI.sound.Sound.from(GAME_OVER_SOUND_URL);
+const jumpSound = PIXI.sound.Sound.from(JUMP_SOUND_URL);
 const duckSound = PIXI.sound.Sound.from(DUCK_SOUND_URL);
 
 const game = new Application();
@@ -115,6 +122,7 @@ const startGameAnimation = new PIXI.extras.AnimatedSprite([t1, t2, t3]);
 startGameAnimation.animationSpeed = 0.1;
 startGameAnimation.play();
 game.stage.addChild(startGameAnimation);
+startGameSound.play();
 
 let isGameStarted = false;
 window.addEventListener("keydown", event => {
@@ -141,12 +149,18 @@ function startGame() {
     game.stage.addChild(jupiter);
 
     clouds.position.set(CLOUDS_POSITION_X, CLOUDS_POSITION_Y);
+    moreClouds.position.set(CLOUDS_POSITION_X / 2.5, CLOUDS_POSITION_Y + 100);
     game.stage.addChild(clouds);
+    game.stage.addChild(moreClouds);
     game.ticker.add(() => {
         clouds.position.x -= CLOUDS_SPEED_X;
+        moreClouds.position.x -= CLOUDS_SPEED_X;
 
         if (clouds.position.x < -400) {
             clouds.position.x = 1000;
+        }
+        if (moreClouds.position.x < -400) {
+            moreClouds.position.x = 1200;
         }
     });
 
@@ -347,9 +361,10 @@ function startGame() {
     function restartGame() {
         score = 0;
 
+        startGameSound.play();
+
         game.stage.removeChild(gameOverScreen);
 
-        clouds.position.set(CLOUDS_POSITION_X, CLOUDS_POSITION_Y);
         triceratops.position.set(900, FLOOR_POSITION_Y - 55);
         orangeVelociraptor.position.set(
             getRandom(1000, 3000),
@@ -369,6 +384,8 @@ function startGame() {
 
     function gameOver() {
         isGameOver = true;
+        startGameSound.stop();
+
         gameOverSound.play();
         game.stage.addChild(gameOverScreen);
 
